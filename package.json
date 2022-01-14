@@ -1,0 +1,25 @@
+{
+  "name": "hangar-bot",
+  "version": "1.0.0",
+  "description": "V2 of Hangar Discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WoutersThijs/hangar-bot-v2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WoutersThijs/hangar-bot-v2/issues"
+  },
+  "homepage": "https://github.com/WoutersThijs/hangar-bot-v2#readme",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "dotenv": "^11.0.0",
+    "mongoose": "^6.1.6"
+  }
+}
