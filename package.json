@@ -18,9 +18,11 @@
   },
   "homepage": "https://github.com/WoutersThijs/hangar-bot-v2#readme",
   "dependencies": {
+    "@types/needle": "^2.5.2",
     "discord.js": "^13.6.0",
     "dotenv": "^11.0.0",
     "mongoose": "^6.1.6",
-    "twit": "^2.2.11"
+    "needle": "^3.0.0",
+    "socket.io": "^4.4.1"
   }
 }

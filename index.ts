@@ -2,6 +2,7 @@ import DiscordJS, { Intents } from 'discord.js'
 import connect from './utils/mongo'
 import dotenv from 'dotenv'
 import * as ChatService from './services/chat.service'
+import * as TwitterService from './services/twitter.service'
 
 dotenv.config()
 
@@ -70,7 +71,24 @@ client.on('ready', async () => {
     commands?.create({
         name: 'hbtoggle',
         description: 'Toggles Twitter listening.'
-    })
+    });
+
+    (async () =>{
+        let currentRules
+    
+        try {
+            currentRules = await TwitterService.getRules()
+
+            await TwitterService.deleteRules(currentRules)
+
+            await TwitterService.setRules()
+        } catch (error){
+            console.error(error)
+            process.exit(1)
+        }
+
+        TwitterService.streamTweets()
+    })()
 })
 
 client.on('interactionCreate', async (interaction) => {
