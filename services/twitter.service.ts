@@ -76,11 +76,11 @@ export async function streamTweets(client: DiscordJS.Client){
 
             response.on('data', async (user_data) => {
                 try{
-                    const tweet_username: String = user_data.data.username
+                    const tweet_username: String = user_data.data.username.toLowerCase();
                     let all_chats = await ChatService.getAllChats({})
 
                     for(let chat of all_chats){
-                        if(chat.twitter_enabled == true && chat.twitter_accounts.includes(tweet_username.toLowerCase())){
+                        if(chat.twitter_enabled == true && chat.twitter_accounts.includes(tweet_username)){
                             const channel = client.channels.cache.get('' + chat.discord_id) as TextChannel;
                             channel.send("https://twitter.com/" + tweet_username + "/status/" + json.data.id);
                             // channel.send("**@" + tweet_username + "** \n" + tweet_text)

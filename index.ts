@@ -88,7 +88,7 @@ client.on('interactionCreate', async (interaction) => {
                 ephemeral: true
             })
         } else if(commandName === 'hbadd'){
-            const twitter_account = options.getString("twitter_account")!
+            const twitter_account = options.getString("twitter_account")!.toLowerCase();
 
             if(chat?.twitter_accounts.includes(twitter_account)){
                 interaction.reply({
@@ -115,7 +115,7 @@ client.on('interactionCreate', async (interaction) => {
             }
 
         } else if(commandName === 'hbremove'){
-            const twitter_account = options.getString("twitter_account")!
+            const twitter_account = options.getString("twitter_account")!.toLowerCase();
             
             if(!chat?.twitter_accounts.includes(twitter_account)){
                 interaction.reply({
@@ -187,7 +187,6 @@ async function setupTwitterListening(){
         })
     })
 
-    const ruless = [{value: `giveaway`}];
     await TwitterService.setRules(rules)
 
     await TwitterService.streamTweets(client)
