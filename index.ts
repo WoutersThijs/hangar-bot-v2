@@ -3,6 +3,7 @@ import connect from './utils/mongo'
 import dotenv from 'dotenv'
 import * as ChatService from './services/chat.service'
 import * as TwitterService from './services/twitter.service'
+import { ChatDocument } from './models/chat.model'
 
 dotenv.config()
 
@@ -17,19 +18,6 @@ client.on('ready', async () => {
     console.log('Bot is ready.')
 
     await connect();
-
-    const chat = await ChatService.findChat({discord_id: "882183609275023390"})
-
-    if(chat != null){
-        console.log(chat?.discord_id)
-    } else {
-        const new_chat =await ChatService.createChat({
-            discord_id: "882183609275023390",
-            twitter_enabled: true,
-            twitter_accounts: ["test1", "test2"]
-        });
-        console.log(new_chat.discord_id)
-    }
 
     const guild_id = '844200833603076097'
     const guild = client.guilds.cache.get(guild_id)
@@ -73,22 +61,7 @@ client.on('ready', async () => {
         description: 'Toggles Twitter listening.'
     });
 
-    (async () =>{
-        let currentRules
-    
-        try {
-            currentRules = await TwitterService.getRules()
-
-            await TwitterService.deleteRules(currentRules)
-
-            await TwitterService.setRules()
-        } catch (error){
-            console.error(error)
-            process.exit(1)
-        }
-
-        TwitterService.streamTweets()
-    })()
+    setupTwitterListening();
 })
 
 client.on('interactionCreate', async (interaction) => {
@@ -133,6 +106,8 @@ client.on('interactionCreate', async (interaction) => {
 
                 await ChatService.findAndUpdateChat({discord_id: chat_id}, {twitter_accounts: new_twitter_accounts}, {})
 
+                setupTwitterListening();
+
                 interaction.reply({
                     content: 'Added.',
                     ephemeral: true
@@ -158,6 +133,8 @@ client.on('interactionCreate', async (interaction) => {
 
                 await ChatService.findAndUpdateChat({discord_id: chat_id}, {twitter_accounts: new_twitter_accounts}, {})
 
+                setupTwitterListening();
+
                 interaction.reply({
                     content: 'Removed.',
                     ephemeral: true
@@ -168,12 +145,16 @@ client.on('interactionCreate', async (interaction) => {
            if(chat?.twitter_enabled){
                 await ChatService.findAndUpdateChat({discord_id: chat_id}, {twitter_enabled: false}, {})
 
+                setupTwitterListening();
+
                 interaction.reply({
                     content: 'Listening has been disabled.',
                     ephemeral: true
                 })
             } else {
                 await ChatService.findAndUpdateChat({discord_id: chat_id}, {twitter_enabled: true}, {})
+
+                setupTwitterListening();
 
                 interaction.reply({
                     content: 'Listening has been enabled.',
@@ -185,3 +166,29 @@ client.on('interactionCreate', async (interaction) => {
 })
 
 client.login(process.env.DISCORD_BOT_TOKEN)
+
+async function setupTwitterListening(){
+    let currentRules;
+    let newRules;
+
+    let allChats = await ChatService.getAllChats({});
+    let twitterAccounts: String[] = [];
+
+    currentRules = await TwitterService.getRules()
+    await TwitterService.deleteRules(currentRules)
+    const rules: { value: string }[] = [];
+
+    await allChats.forEach((value, index) => {
+        value.twitter_accounts.forEach((value: any, index) => {
+            if(!twitterAccounts?.includes(value)){
+                twitterAccounts?.push(value)
+                rules.push({value: `from:${value}`})
+            }
+        })
+    })
+
+    const ruless = [{value: `giveaway`}];
+    await TwitterService.setRules(rules)
+
+    await TwitterService.streamTweets(client)
+}

@@ -5,6 +5,13 @@ export async function createChat(input: ChatInput){
     return ChatModel.create(input);
 }
 
+export async function getAllChats(
+    query: FilterQuery<ChatDocument>,
+    options: QueryOptions = { lean : false }){
+
+    return ChatModel.find(query, {}, options);
+}
+
 export async function findChat(
     query: FilterQuery<ChatDocument>,
     options: QueryOptions = { lean : false }){
