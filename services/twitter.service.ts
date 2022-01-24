@@ -66,7 +66,6 @@ export async function streamTweets(client: DiscordJS.Client){
     stream.on('data', async (chat_data) => {
         try {
             const json = JSON.parse(chat_data)
-            const tweet_text = json.data.text;
             console.log(json.data)
             const response = await needle.get("https://api.twitter.com/2/users/" + json.data.author_id, {
                 headers: {
